@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f5ef"><meta name="application-name" content="贺卡工坊"><meta name="description" content="贺卡工坊：在线设计立体贺卡，编辑祝福、添加贴纸、保存图片并分享心意。"><title>贺卡工坊 V6 — 贺卡创作工作室</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap');
+:root{--bg:#f7f6f1;--paper:#f4f1e8;--ink:#252b26;--muted:#85877e;--line:#e6e3da;--green:#314b3b;--gold:#b89a62;--red:#9c3932;--shadow:0 24px 70px #34372a18}
+*{box-sizing:border-box}button{touch-action:manipulation}body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans','Helvetica Neue',sans-serif;font-size:13px}button,input,textarea,select{font:inherit}button{cursor:pointer}
+header{height:66px;padding:0 4.5vw;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:#faf9f5;position:sticky;top:0;z-index:20}
+.logo{font-family:'Cormorant Garamond',serif;font-size:22px;letter-spacing:.15em}.logo small{font:9px 'DM Sans';display:block;letter-spacing:.28em;color:#929187;margin-top:1px}
+.head-right{display:flex;gap:9px;align-items:center}.save-state{font-size:9px;color:#8b927f;white-space:nowrap}.save-state:before{content:"●";font-size:7px;margin-right:5px;color:#7b9876}.head-right button,.pill{border:1px solid var(--line);background:transparent;padding:9px 15px;border-radius:2px;font-size:11px;color:#62675f}.head-right .dark{background:var(--green);border-color:var(--green);color:white}
+main{max-width:1320px;margin:auto;padding:28px 4.5vw 70px}.intro{display:flex;align-items:end;justify-content:space-between;margin:4px 0 24px}.kicker{font-size:9px;letter-spacing:.3em;color:#9b8968}.intro h1{font:400 clamp(28px,3.3vw,42px) 'Cormorant Garamond',serif;letter-spacing:.04em;margin:7px 0 0}.intro p{color:#8b8c82;font-size:11px;letter-spacing:.04em;margin:0 0 5px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:24px;align-items:stretch}
+.workbench{background:#eeede6;border:1px solid #e4e1d7;min-height:650px;position:relative;display:flex;flex-direction:column;overflow:hidden}
+.workbench:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 43%,#fff9 0,transparent 62%);pointer-events:none}
+.work-top{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 18px;position:relative;z-index:2;color:#929187;font-size:9px;letter-spacing:.18em}
+.stage{flex:1;min-height:520px;display:flex;align-items:center;justify-content:center;perspective:1700px;position:relative;overflow:hidden;padding:30px 20px}
+.book-wrap{width:min(78%,690px);height:clamp(290px,35vw,410px);position:relative;perspective:1800px;filter:drop-shadow(0 20px 23px #3d3a2b22);transition:transform .5s}
+.book{position:absolute;inset:0;display:flex;transform-style:preserve-3d}
+.leaf{width:50%;height:100%;position:relative;overflow:hidden;background-color:#f7f4eb;background-image:repeating-linear-gradient(0deg,#fff0 0,#fff0 3px,#a79a7610 4px),radial-gradient(#cfc5ad20 .7px,transparent .8px);background-size:auto,6px 6px;border:1px solid #ded9cc}
+.leaf.left{border-radius:4px 0 0 4px;border-right:0;box-shadow:inset -15px 0 19px -18px #6d6656}
+.leaf.right{border-radius:0 4px 4px 0;border-left:0;box-shadow:inset 14px 0 18px -18px #6d6656;display:flex;align-items:center;justify-content:center}
+.gutter{position:absolute;left:50%;top:0;bottom:0;width:17px;transform:translateX(-50%);z-index:5;background:linear-gradient(90deg,#0000,#5c54421c 45%,#fff8 52%,#0000);pointer-events:none}
+.cover-art{width:100%;height:100%;display:block}
+.sticker{position:absolute;z-index:8;font-size:clamp(24px,3vw,39px);cursor:grab;user-select:none;touch-action:none;filter:drop-shadow(0 2px 1px #554d3820)}
+.sticker:active{cursor:grabbing}.sticker.selected{outline:1px dashed #9d895e;outline-offset:5px}
+.left-caption{position:absolute;bottom:16px;left:0;right:0;text-align:center;font:10px 'Cormorant Garamond',serif;letter-spacing:.3em;color:#8a806c}
+.inside-copy{width:78%;max-width:290px;text-align:center;position:relative;z-index:2}
+.copy-top{font:10px 'Cormorant Garamond',serif;letter-spacing:.28em;color:#9c8b68;margin-bottom:24px}
+.to-line{font:italic 18px 'Cormorant Garamond',serif;color:#536250;margin-bottom:12px}
+.big-message{font:italic clamp(19px,2.4vw,27px)/1.32 'Cormorant Garamond',serif;color:#37493b;white-space:pre-wrap;overflow-wrap:anywhere}
+.copy-divider{width:34px;height:1px;background:#bda879;margin:20px auto}
+.from-line{font:italic 15px 'Cormorant Garamond',serif;color:#8b7958}
+.date-line{font:9px 'DM Sans',sans-serif;letter-spacing:.16em;color:#aaa18f;margin-top:20px}
+.page-no{position:absolute;bottom:12px;left:0;right:0;text-align:center;font:9px 'Cormorant Garamond';color:#aaa18f;letter-spacing:.2em}
+.book.closed .leaf.right{transform-origin:left center;transform:rotateY(-3deg)}
+.cover-standby{position:absolute;inset:0;z-index:10;display:none;align-items:center;justify-content:center;transform-style:preserve-3d}
+.cover-standby.show{display:flex}
+.cover-card{width:250px;height:340px;box-shadow:0 18px 30px #38332230;transform:rotateY(-7deg) rotateX(2deg);border:7px solid #f7f1e5;position:relative;overflow:hidden}
+.cover-card svg{width:100%;height:100%}
+.open-cover{position:absolute;bottom:-49px;left:50%;transform:translateX(-50%);border:1px solid #d4cbbb;background:#faf9f5;padding:10px 18px;font-size:10px;letter-spacing:.14em;color:#4d5b4c;white-space:nowrap}
+.stage-bottom{height:54px;display:flex;align-items:center;justify-content:center;gap:14px;position:relative;z-index:2}
+.stage-bottom button{border:1px solid #d9d5ca;background:#f7f6f0;color:#596356;width:30px;height:30px;border-radius:50%;font-size:14px}
+.dots{display:flex;gap:5px}.dots i{width:4px;height:4px;border-radius:50%;background:#c7c2b5}.dots i.on{background:#596d58}
+.thumb-strip{height:102px;border-top:1px solid #e0ddd3;background:#f4f3ed;display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;position:relative;z-index:2}
+.thumb{height:72px;width:58px;border:1px solid #d9d4c8;background:#eee9dc;padding:3px;opacity:.65;transition:.2s}.thumb.active{opacity:1;border:1px solid #667a62;transform:translateY(-3px);box-shadow:0 3px 8px #3332}.thumb svg{width:100%;height:100%}
+.side{background:#fbfaf6;border:1px solid var(--line);display:flex;flex-direction:column;min-height:650px}
+.side-head{padding:18px 20px 0}.step{font-size:9px;letter-spacing:.22em;color:#a18e6b}.side h2{font:400 22px 'Cormorant Garamond',serif;margin:5px 0 15px}
+.tabs{display:flex;border-bottom:1px solid var(--line);gap:18px}.tab{padding:0 0 12px;border:0;background:none;font-size:10px;color:#9b9a91;position:relative}.tab.active{color:#334b3b}.tab.active:after{content:"";position:absolute;bottom:-1px;left:0;right:0;height:2px;background:#566d57}
+.panel{padding:18px 20px;flex:1}.panel[hidden]{display:none}.section-label{font-size:9px;letter-spacing:.2em;color:#9b927f;margin:0 0 12px}
+.design-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.design{border:1px solid #e4dfd4;padding:5px;background:#f7f5ee;text-align:left;color:#5c6258}.design.active{border-color:#74866d;box-shadow:0 0 0 1px #74866d22}.design-art{height:85px;display:block;overflow:hidden}.design-art svg{width:100%;height:100%}.design b{display:block;font:12px 'Cormorant Garamond',serif;margin:7px 3px 1px}.design small{display:block;font:8px 'DM Sans';color:#aaa18f;margin:0 3px 4px;letter-spacing:.12em}
+.field{display:block;margin:0 0 14px}.field span{display:block;font-size:9px;color:#8d8d82;letter-spacing:.12em;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid #e5e0d5;background:#fffefa;padding:10px 11px;border-radius:0;color:#475447;font:13px 'Cormorant Garamond',serif;outline:none}.field textarea{height:105px;resize:vertical;line-height:1.6}.field input:focus,.field textarea:focus{border-color:#87977d}
+.row-fields{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.sticker-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.sticker-grid button{height:42px;border:1px solid #e7e2d8;background:#f8f6f0;font-size:22px}.sticker-grid button:hover{border-color:#a99a79}
+.tip{font-size:9px;color:#a09b8f;line-height:1.7;margin:12px 0}
+.toggle-line{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:13px 0;font-size:10px;color:#656a60}.toggle{width:34px;height:19px;border:0;border-radius:20px;background:#d9d6cc;padding:2px}.toggle:after{content:"";display:block;width:15px;height:15px;background:white;border-radius:50%;transition:.2s}.toggle.on{background:#627960}.toggle.on:after{transform:translateX(15px)}
+.side-footer{padding:15px 20px 18px;border-top:1px solid var(--line)}.primary{width:100%;border:0;background:#344d3d;color:#fff;padding:13px;font-size:10px;letter-spacing:.15em}.secondary-actions{display:flex;gap:8px;margin-top:8px}.secondary-actions button{flex:1;border:1px solid #e1dccf;background:transparent;padding:10px;color:#73776d;font-size:9px}
+.finish{display:none;position:fixed;inset:0;background:#f6f3eb;z-index:40;align-items:center;justify-content:center;padding:20px}.finish.show{display:flex}.finish-inner{width:min(920px,100%);display:grid;grid-template-columns:1fr 330px;gap:55px;align-items:center}.envelope-scene{height:500px;display:grid;place-items:center;perspective:1000px;background:radial-gradient(ellipse,#fff 0,transparent 70%)}.envelope{width:min(430px,90%);height:285px;position:relative;background:#e9dfce;box-shadow:0 25px 45px #3b32251c;overflow:visible}.env-base{position:absolute;inset:0;background:#eee4d4}.env-fold{position:absolute;inset:0;background:#f7efe3;clip-path:polygon(0 0,50% 58%,100% 0);transform-origin:top;transition:transform .8s;z-index:3}.env-bottom{position:absolute;inset:0;background:#e4d8c6;clip-path:polygon(0 100%,50% 43%,100% 100%);z-index:2}.env-seal{position:absolute;z-index:5;left:50%;top:54%;transform:translate(-50%,-50%);width:55px;height:55px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#d45b4c,#922b2a 70%);box-shadow:0 4px 12px #4b171744;color:#f0d5a3;font-size:22px;border:1px solid #7f2727;cursor:pointer}.envelope.open .env-fold{transform:rotateX(180deg)}.envelope.open .env-seal{opacity:0;pointer-events:none}
+.finish-copy .kicker{font-size:9px;letter-spacing:.25em}.finish-copy h2{font:400 34px 'Cormorant Garamond';margin:10px 0}.finish-copy p{font:13px/1.9 'Cormorant Garamond';color:#77796f}.finish-copy button{margin-top:12px}.finish-close{position:absolute;top:22px;right:25px;border:0;background:none;font-size:22px;color:#777}
+
+.finish-inner{grid-template-columns:minmax(0,1fr) 300px;gap:35px}
+.envelope-scene{position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.finish-card{display:none;width:min(100%,560px);height:330px;position:absolute;z-index:2;box-shadow:0 22px 45px #38332225;grid-template-columns:1fr 1fr;transform:translateY(8px);background:#f7f4eb}
+.finish-card.show{display:grid;animation:cardReveal .75s ease both}
+@keyframes cardReveal{from{opacity:0;transform:translateY(25px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.finish-card-left{overflow:hidden;border-right:1px solid #ddd5c5}
+.finish-card-left svg{width:100%;height:100%;display:block}
+.finish-card-right{padding:25px 20px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:repeating-linear-gradient(0deg,#f8f5ed,#f8f5ed 3px,#f1ede3 4px)}
+.finish-card-right small{font-size:8px;letter-spacing:.2em;color:#9b8a6b}
+.finish-card-right h3{font:italic 21px Georgia,serif;color:#52624f;font-weight:400;margin:20px 0 10px}
+.finish-card-right p{font:italic 15px/1.6 Georgia,serif;color:#4a584b;white-space:pre-wrap;overflow-wrap:anywhere;max-height:115px;overflow:auto}
+.finish-sign{font:italic 14px Georgia,serif;color:#927b58;margin-top:12px}
+.finish-card-right .finish-date{margin-top:16px}
+.finish-help{position:absolute;bottom:8px;color:#9a927f;font-size:9px;letter-spacing:.1em}
+.envelope.open{opacity:0;transform:scale(.88);pointer-events:none;transition:.5s}
+@media(max-width:900px){.finish-inner{grid-template-columns:1fr;gap:10px}.envelope-scene{height:340px}.finish-card{width:min(100%,500px);height:270px}.finish-copy{text-align:center}.finish-help{bottom:0}}
+@media(max-width:520px){.finish-card{height:235px;width:100%}.finish-card-right{padding:12px 9px}.finish-card-right h3{font-size:16px;margin:10px 0 5px}.finish-card-right p{font-size:11px;line-height:1.45;max-height:80px}.finish-sign{font-size:11px;margin-top:6px}.finish-card-right small{font-size:7px}.finish-card-right .finish-date{margin-top:8px}.envelope-scene{height:290px}}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,15px);background:#354d40;color:#fff;padding:10px 17px;font-size:10px;opacity:0;transition:.25s;z-index:60;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:900px){main{padding:22px 14px 40px}.layout{grid-template-columns:1fr}.workbench{min-height:560px}.stage{min-height:400px}.book-wrap{width:min(92%,650px);height:clamp(250px,52vw,370px)}.side{min-height:0}.panel{min-height:220px}.finish-inner{grid-template-columns:1fr;gap:15px;max-width:520px}.envelope-scene{height:300px}.finish-copy{text-align:center}.finish-copy h2{font-size:27px}}
+@media(max-width:520px){header{height:58px;padding:0 10px}.logo{font-size:18px}.save-state{display:none}.head-right button{padding:8px 10px;font-size:9px}.intro{display:block;margin-bottom:17px}.intro p{margin-top:7px}.workbench{min-height:480px}.stage{min-height:330px;padding:15px 4px}.book-wrap{width:96%;height:clamp(210px,65vw,290px)}.inside-copy{width:84%}.big-message{font-size:clamp(16px,4.7vw,22px)}.to-line{font-size:15px;margin-bottom:6px}.copy-top{font-size:8px;margin-bottom:12px}.copy-divider{margin:12px auto}.from-line{font-size:13px}.date-line{margin-top:10px}.thumb-strip{height:82px}.thumb{height:57px;width:46px}.side-head{padding:15px 15px 0}.panel{padding:15px}.side-footer{padding:13px 15px 15px}.leaf{background-size:auto,5px 5px}}
+
+/* V6 studio controls */
+.customize-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.swatches{display:flex;gap:8px;flex-wrap:wrap}.swatch{width:29px;height:29px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #d6d0c3;cursor:pointer}.swatch.active{box-shadow:0 0 0 2px #526b55}.tool-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.tool-actions button,.small-action{border:1px solid #e1dccf;background:#fffefa;padding:10px 8px;color:#62685e;font-size:10px}.upload-label{display:block;border:1px dashed #c9c2b3;padding:12px;text-align:center;font-size:10px;color:#6f766a;cursor:pointer}.upload-label input{display:none}.library-modal{position:fixed;inset:0;z-index:100;background:#1e241dcc;display:none;align-items:center;justify-content:center;padding:18px}.library-modal.show{display:flex}.library-box{width:min(620px,100%);max-height:82vh;overflow:auto;background:#faf8f1;padding:20px;border:1px solid #d9d1c1}.library-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.library-head h3{font:24px 'Cormorant Garamond',serif;margin:0}.library-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid #e7e1d5;padding:11px 0}.library-item strong{font-size:11px}.library-item small{display:block;color:#999;font-size:9px;margin-top:4px}.library-item button{border:1px solid #ded8ca;background:white;padding:7px 9px;font-size:9px}.qr-view{text-align:center;padding:14px}.qr-view img{width:220px;height:220px;max-width:70vw;background:white;padding:10px}.font-serif .big-message,.font-serif .to-line,.font-serif .from-line{font-family:'Cormorant Garamond',Georgia,serif!important}.font-elegant .big-message,.font-elegant .to-line,.font-elegant .from-line{font-family:'Times New Roman',serif!important;font-style:italic}.font-modern .big-message,.font-modern .to-line,.font-modern .from-line{font-family:'DM Sans',Arial,sans-serif!important;font-style:normal}.font-hand .big-message,.font-hand .to-line,.font-hand .from-line{font-family:'KaiTi','STKaiti',cursive!important;font-style:normal}.finish-card.font-modern .finish-card-right h3,.finish-card.font-modern .finish-card-right p,.finish-card.font-modern .finish-sign{font-family:Arial,sans-serif;font-style:normal}.finish-card.font-elegant .finish-card-right h3,.finish-card.font-elegant .finish-card-right p,.finish-card.font-elegant .finish-sign{font-family:Georgia,serif;font-style:italic}.finish-card.font-hand .finish-card-right h3,.finish-card.font-hand .finish-card-right p,.finish-card.font-hand .finish-sign{font-family:KaiTi,STKaiti,cursive;font-style:normal}
+@media(max-width:520px){.tool-actions{grid-template-columns:1fr 1fr}.customize-grid{grid-template-columns:1fr 1fr}}
+
+.template-top{border:1px solid #d8d1c3;background:#f8f5ed;color:#526451;padding:9px 13px;font-size:11px;letter-spacing:.06em}
+.template-modal{position:fixed;inset:0;z-index:110;background:#1e241dcc;display:none;align-items:center;justify-content:center;padding:14px}.template-modal.show{display:flex}.template-box{width:min(920px,100%);max-height:90vh;overflow:auto;background:#faf8f1;padding:clamp(16px,3vw,28px);border:1px solid #d9d1c1}.template-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.template-head h2{font:30px 'Cormorant Garamond',Georgia,serif;margin:0;color:#35483a}.template-sub{font-size:11px;color:#898577;margin:7px 0 18px}.template-filters{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0 18px}.template-filter{border:1px solid #ded8cb;background:#fffefa;padding:8px 12px;color:#72766a;font-size:11px}.template-filter.active{background:#344b3b;color:#fff;border-color:#344b3b}.template-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.template-card{background:#fffefa;border:1px solid #e5dfd3;padding:8px;min-width:0}.template-preview{height:155px;overflow:hidden;background:#eee9df}.template-preview svg{width:100%;height:100%;object-fit:cover}.template-meta{padding:9px 2px 2px}.template-meta strong{display:block;font-size:13px;color:#39483b}.template-meta small{display:block;font-size:10px;color:#9b9588;margin:4px 0 9px}.template-meta button{width:100%;border:0;background:#344b3b;color:white;padding:10px;font-size:11px}.template-close{border:1px solid #ded8cb;background:#fffefa;padding:8px 12px;color:#687063}@media(max-width:620px){.template-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.template-preview{height:135px}.template-top{padding:8px 9px;font-size:10px}}@media(max-width:380px){.template-grid{grid-template-columns:1fr 1fr}.template-preview{height:112px}}
+</style></head>
+<body>
+<header><div class="logo">贺卡工坊<small>GREETING CARD STUDIO · V6 CREATIVE STUDIO</small></div><div class="head-right"><span class="save-state" id="saveState">草稿自动保存</span><button id="openTemplates" class="template-top">模板中心</button><button id="reset">重新开始</button><button class="dark" id="finishTop">完成贺卡 ↗</button></div></header>
+<main>
+<div class="intro"><div><div class="kicker">贺卡工坊 · GREETING CARD STUDIO</div><h1>把心意，做成一张卡片。</h1></div><p>挑选封面、写下祝福、添加装饰，让每份心意都有自己的模样。</p></div>
+<div class="layout">
+<section class="workbench">
+<div class="work-top"><span>贺卡预览 / <b id="cardIndex">01</b></span><span>实时预览 · 立体纸艺</span></div>
+<div class="stage">
+<div class="book-wrap" id="bookWrap">
+<div class="book" id="book">
+<div class="leaf left" id="leftPage"><div id="art"></div><div id="stickerLayer"></div><div class="left-caption" id="leftCaption">A LITTLE WINTER WISH</div><div class="page-no">I</div></div>
+<div class="leaf right"><div class="inside-copy"><div class="copy-top" id="insideTop">A NOTE FROM THE HEART</div><div class="to-line" id="previewTo">Dear friend,</div><div class="big-message" id="previewMessage">May your days be warm, your heart be light, and your holidays be filled with little wonders.</div><div class="copy-divider"></div><div class="from-line" id="previewFrom">— With love</div><div class="date-line" id="previewDate">DECEMBER · 2026</div></div><div class="page-no">II</div></div><div class="gutter"></div>
+</div></div>
+<div class="cover-standby" id="coverStandby"><div class="cover-card" id="coverArt"></div><button class="open-cover" id="openBook">OPEN YOUR CARD ✦</button></div>
+</div>
+<div class="stage-bottom"><button id="prevDesign" aria-label="上一款">‹</button><div class="dots" id="dots"></div><button id="nextDesign" aria-label="下一款">›</button></div>
+<div class="thumb-strip" id="thumbs"></div>
+</section>
+<aside class="side">
+<div class="side-head"><div class="step">STEP 01 — DESIGN YOUR CARD</div><h2>制作你的贺卡</h2><div class="tabs"><button class="tab active" data-tab="design">卡片设计</button><button class="tab" data-tab="message">祝福内容</button><button class="tab" data-tab="stickers">贴纸装饰</button></div></div>
+<div class="panel" id="designPanel"><p class="section-label">选择封面 · 10 款主题</p><div class="design-grid" id="designGrid"></div><div style="height:18px"></div><p class="section-label">纸张与个性化工作台</p><label class="field"><span>纸张质感</span><select id="paper"><option value="classic">经典棉纸 · Cotton</option><option value="warm">暖调复古 · Vintage</option><option value="snow">雪白纹理 · Snow</option></select></label>
+<p class="section-label">背景风格 / BACKGROUND</p><div class="swatches" id="bgSwatches"><button class="swatch active" data-bg="#f7f4eb" style="background:#f7f4eb" title="奶油纸"></button><button class="swatch" data-bg="#f0e3d1" style="background:#f0e3d1" title="复古米色"></button><button class="swatch" data-bg="#e4eeee" style="background:#e4eeee" title="雾蓝"></button><button class="swatch" data-bg="#f2e0e4" style="background:#f2e0e4" title="樱花粉"></button><button class="swatch" data-bg="#e4eadf" style="background:#e4eadf" title="鼠尾草绿"></button><button class="swatch" data-bg="#e9e1f0" style="background:#e9e1f0" title="薰衣草紫"></button></div>
+<label class="field" style="margin-top:12px"><span>自定义背景颜色</span><input type="color" id="bgColor" value="#f7f4eb"></label>
+<label class="upload-label">＋ 上传自己的背景图片<input type="file" id="bgUpload" accept="image/*"></label>
+<p class="section-label" style="margin-top:16px">祝福字体 / TYPOGRAPHY</p><label class="field"><span>字体风格</span><select id="fontStyle"><option value="font-serif">优雅衬线</option><option value="font-elegant">浪漫斜体</option><option value="font-modern">简约现代</option><option value="font-hand">中文手写风</option></select></label>
+<label class="field"><span>字体颜色</span><input type="color" id="fontColor" value="#37493b"></label>
+<div class="tool-actions"><button id="favoriteCurrent">☆ 收藏当前设计</button><button id="openLibrary">我的收藏 / 草稿</button></div>
+</div>
+<div class="panel" id="messagePanel" hidden><p class="section-label">A FEW WORDS FOR SOMEONE</p><label class="field"><span>收件人称呼 / TO</span><input id="toInput" value="Dear friend," maxlength="35"></label><label class="field"><span>祝福内容 / MESSAGE</span><textarea id="msgInput">May your days be warm, your heart be light, and your holidays be filled with little wonders.</textarea></label><div class="row-fields"><label class="field"><span>落款 / FROM</span><input id="fromInput" value="With love" maxlength="30"></label><label class="field"><span>日期 / DATE</span><input id="dateInput" value="DECEMBER · 2026" maxlength="24"></label></div></div>
+<div class="panel" id="stickersPanel" hidden><p class="section-label">PICK A LITTLE DECORATION</p><div class="sticker-grid" id="stickerGrid"><button>🌙</button><button>🍪</button><button>❄️</button><button>🎄</button><button>⭐</button><button>🎁</button><button>🔔</button><button>❤️</button><button>🌿</button><button>🌼</button><button>🕯️</button><button>🦌</button><button>✉️</button><button>🍒</button><button>🪽</button></div><p class="tip">点击添加贴纸，拖动贴纸调整位置；双击贴纸可以移除。让每一张卡片都独一无二。</p><div class="toggle-line"><span>轻柔背景音乐</span><button class="toggle" id="music"></button></div><div class="toggle-line"><span>纸张翻页音效</span><button class="toggle on" id="sound"></button></div></div>
+<div class="side-footer"><button class="primary" id="finish">完成设计 · 预览并封存 ↗</button><div class="secondary-actions"><button id="backCover">封面预览</button><button id="resetStickers">清空贴纸</button></div></div>
+</aside></div>
+</main>
+<div class="finish" id="finishView"><button class="finish-close" id="closeFinish">×</button><div class="finish-inner"><div class="envelope-scene">
+<div class="finish-card" id="finishCard"><div class="finish-card-left" id="finishCardArt"></div><div class="finish-card-right"><small>A NOTE FOR YOU</small><h3 id="finishTo">Dear friend,</h3><p id="finishMsg"></p><div class="finish-sign" id="finishFrom"></div><small class="finish-date" id="finishDate"></small></div></div>
+<div class="envelope" id="envelope"><div class="env-base"></div><div class="env-bottom"></div><div class="env-fold"></div><button class="env-seal" id="seal">✦</button></div><div class="finish-help">点火漆封印，查看贺卡内容</div></div><div class="finish-copy"><div class="kicker">SEALED WITH LOVE</div><h2>你的心意，已经准备好了。</h2><p>一份小小的心意，已经被认真封存。点击火漆封印，开启这张贺卡。</p><button class="primary" id="reopen">再次打开贺卡</button><button class="secondary-actions" style="width:100%" id="saveImage">保存贺卡图片</button><button class="secondary-actions" style="width:100%" id="share">分享贺卡 / 复制链接</button><button class="secondary-actions" style="width:100%" id="showQR">生成分享二维码</button></div></div></div>
+<div class="template-modal" id="templateModal"><div class="template-box"><div class="template-head"><div><div class="kicker">GREETING CARD COLLECTION</div><h2>模板中心</h2></div><button class="template-close" id="closeTemplates">关闭 ×</button></div><p class="template-sub">按场景挑选一份灵感模板，一键套用封面、背景、字体与祝福文案；之后仍可自由修改。</p><div class="template-filters" id="templateFilters"></div><div class="template-grid" id="templateGrid"></div></div></div>
+<div class="library-modal" id="libraryModal"><div class="library-box"><div class="library-head"><h3>我的收藏与草稿</h3><button class="small-action" id="closeLibrary">关闭</button></div><div id="libraryList"></div></div></div>
+<div class="library-modal" id="qrModal"><div class="library-box"><div class="library-head"><h3>分享二维码</h3><button class="small-action" id="closeQR">关闭</button></div><div class="qr-view" id="qrContent"><p>在线部署后即可生成可扫码访问的二维码。</p></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const designs=[
+{id:'window',name:'Christmas Window',cn:'圣诞橱窗',tag:'HOLIDAY CLASSIC'},
+{id:'wreath',name:'Winter Wreath',cn:'冬日花环',tag:'BOTANICAL'},
+{id:'snow',name:'Snowy Village',cn:'雪夜小镇',tag:'SNOWY DAYS'},
+{id:'moon',name:'Moon & Stars',cn:'月光与星星',tag:'A QUIET WISH'},
+{id:'forest',name:'Forest Letter',cn:'森林来信',tag:'WOODLAND'},
+{id:'sakura',name:'Sakura Bloom',cn:'樱花物语',tag:'SPRING ROMANCE'},
+{id:'birthday',name:'Birthday Confetti',cn:'生日派对',tag:'MAKE A WISH'},
+{id:'love',name:'Love Notes',cn:'心动来信',tag:'WITH LOVE'},
+{id:'ocean',name:'Ocean Breeze',cn:'海风与信',tag:'BY THE SEA'},
+{id:'minimal',name:'Quiet Minimal',cn:'极简留白',tag:'LESS IS MORE'}
+];
+const arts={
+window:`<svg viewBox="0 0 320 410" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="410" fill="#963c34"/><rect x="14" y="14" width="292" height="382" fill="none" stroke="#d9bd83" stroke-width="2"/><rect x="23" y="23" width="274" height="364" fill="none" stroke="#d9bd83" opacity=".7"/><path d="M40 72h240v-28H40z" fill="#f2e6ce"/><path d="M40 44h40v28H40m80-28h40v28h-40m80-28h40v28h-40" fill="#b84c3f"/><path d="M40 72v-28h240v28" fill="none" stroke="#d3b77d" stroke-width="2"/><rect x="54" y="91" width="212" height="220" fill="#263b35" stroke="#e4cc96" stroke-width="8"/><path d="M160 102L82 270h156z" fill="#315744"/><path d="M160 140L66 294h188z" fill="#234938"/><path d="M160 174L54 308h212z" fill="#1c4033"/><path d="M160 86l-9 20h18z" fill="#e6c47b"/><g fill="#e8d29b"><circle cx="125" cy="185" r="5"/><circle cx="188" cy="207" r="5"/><circle cx="145" cy="248" r="5"/><circle cx="211" cy="270" r="5"/><circle cx="99" cy="278" r="5"/></g><path d="M70 180h180M70 240h180" stroke="#d4bd8b" opacity=".8"/><path d="M160 91v220M54 91v220M266 91v220" stroke="#d7c18f" stroke-width="5"/><path d="M0 332h320" stroke="#d5b982" stroke-width="4"/><g fill="#e7d3a8"><path d="M75 350q20-28 40 0q-20 24-40 0"/><path d="M210 350q20-28 40 0q-20 24-40 0"/></g><text x="160" y="378" fill="#f3dfb5" text-anchor="middle" font-size="12" letter-spacing="4">MERRY & BRIGHT</text></svg>`,
+wreath:`<svg viewBox="0 0 320 410" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="410" fill="#e8e9dc"/><rect x="14" y="14" width="292" height="382" fill="none" stroke="#82917a"/><circle cx="160" cy="190" r="112" fill="none" stroke="#527158" stroke-width="13" stroke-dasharray="7 7"/><circle cx="160" cy="190" r="91" fill="none" stroke="#9aab8d" stroke-width="4" stroke-dasharray="3 8"/><g fill="#3d674d"><ellipse cx="160" cy="76" rx="12" ry="34"/><ellipse cx="160" cy="304" rx="12" ry="34"/><ellipse cx="46" cy="190" rx="34" ry="12"/><ellipse cx="274" cy="190" rx="34" ry="12"/><ellipse cx="80" cy="110" rx="13" ry="30" transform="rotate(-45 80 110)"/><ellipse cx="240" cy="110" rx="13" ry="30" transform="rotate(45 240 110)"/><ellipse cx="80" cy="270" rx="13" ry="30" transform="rotate(45 80 270)"/><ellipse cx="240" cy="270" rx="13" ry="30" transform="rotate(-45 240 270)"/></g><g fill="#b64238"><circle cx="160" cy="90" r="10"/><circle cx="251" cy="190" r="10"/><circle cx="160" cy="290" r="10"/><circle cx="69" cy="190" r="10"/></g><path d="M135 93q25-30 50 0l-25 25z" fill="#b84c3d"/><path d="M160 112v28" stroke="#b84c3d" stroke-width="7"/><text x="160" y="190" text-anchor="middle" font-family="Georgia" font-size="22" fill="#53684e" font-style="italic">Warm</text><text x="160" y="216" text-anchor="middle" font-family="Georgia" font-size="22" fill="#53684e" font-style="italic">Wishes</text><text x="160" y="365" text-anchor="middle" font-size="11" letter-spacing="4" fill="#65765d">SEASON OF JOY</text></svg>`,
+snow:`<svg viewBox="0 0 320 410" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="410" fill="#dce6e3"/><rect x="14" y="14" width="292" height="382" fill="none" stroke="#8da5a0"/><circle cx="160" cy="157" r="105" fill="#f0f1e7"/><path d="M30 255l65-86 45 56 45-84 105 120v76H30z" fill="#829c99"/><path d="M64 225l31-56 31 42-26-8-9 10zM113 220l72-79 46 68-42-22-17 18z" fill="#f5f5ed"/><path d="M0 298q65-55 130 0t190-8v120H0z" fill="#f4f3eb"/><path d="M40 300l24-53 24 53zm180-5l26-59 26 59z" fill="#456a69"/><path d="M52 300v40m205-45v45" stroke="#8a694a" stroke-width="7"/><g stroke="#fff" stroke-width="2" opacity=".9"><path d="M60 75v34m-17-17h34m-29-12l24 24m0-24l-24 24"/><path d="M250 92v28m-14-14h28m-24-10l20 20m0-20l-20 20"/></g><text x="160" y="371" text-anchor="middle" font-size="12" letter-spacing="4" fill="#557573">LET IT SNOW</text></svg>`,
+moon:`<svg viewBox="0 0 320 410" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="410" fill="#eee6d4"/><rect x="14" y="14" width="292" height="382" fill="none" stroke="#b6a47d"/><circle cx="164" cy="165" r="90" fill="#c4a568"/><circle cx="202" cy="128" r="84" fill="#eee6d4"/><g fill="#a58a56"><path d="M75 80l7 17 18 7-18 7-7 18-7-18-18-7 18-7z"/><path d="M246 202l5 12 13 5-13 5-5 13-5-13-13-5 13-5z"/><circle cx="88" cy="230" r="4"/><circle cx="234" cy="70" r="4"/><circle cx="111" cy="126" r="3"/></g><path d="M0 300q70-40 140 0t180-5v115H0z" fill="#d7c9a9"/><path d="M75 300q30-70 60 0m65 0q30-70 60 0" fill="none" stroke="#9b936f" stroke-width="3"/><text x="160" y="365" text-anchor="middle" font-size="12" letter-spacing="4" fill="#8e784e">A QUIET WISH</text></svg>`,
+sakura:`<svg viewBox="0 0 320 410" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="410" fill="#f4e4e5"/><rect x="14" y="14" width="292" height="382" fill="none" stroke="#c58d9a"/><path d="M35 285Q130 120 285 70" fill="none" stroke="#80634f" stroke-width="5"/><g fill="#d88fa4"><circle cx="100" cy="205" r="19"/><circle cx="120" cy="185" r="19"/><circle cx="140" cy="207" r="19"/><circle cx="120" cy="226" r="19"/><circle cx="120" cy="205" r="9" fill="#f4d89b"/><circle cx="220" cy="115" r="15"/><circle cx="237" cy="99" r="15"/><circle cx="252" cy="117" r="15"/><circle cx="237" cy="132" r="15"/></g><text x="160" y="355" text-anchor="middle" fill="#956a76" font-size="14" letter-spacing="4">BLOOM WITH LOVE</text></svg>`,
+birthday:`<svg viewBox="0 0 320 410" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="410" fill="#f4e8cf"/><rect x="14" y="14" width="292" height="382" fill="none" stroke="#c49a5a"/><path d="M65 270h190v70H65z" fill="#d88b70"/><path d="M65 270q95-35 190 0" fill="#f0c9a0"/><path d="M115 270v-75h20v75m50 0v-95h20v95" fill="#f3d68e"/><path d="M125 195l-10-20 20 0zm50-20l10-20 10 20z" fill="#d66e62"/><g fill="#c76f63"><circle cx="65" cy="100" r="8"/><circle cx="255" cy="140" r="9"/><circle cx="210" cy="75" r="6"/></g><text x="160" y="365" text-anchor="middle" fill="#936d4b" font-size="14" letter-spacing="4">HAPPY BIRTHDAY</text></svg>`,
+love:`<svg viewBox="0 0 320 410" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="410" fill="#f2dedb"/><rect x="14" y="14" width="292" height="382" fill="none" stroke="#b97875"/><path d="M160 280S48 205 76 130c22-58 83-33 84 8 10-41 70-66 91-8 27 75-91 150-91 150z" fill="#b85d62"/><path d="M160 280S48 205 76 130c22-58 83-33 84 8 10-41 70-66 91-8 27 75-91 150-91 150z" fill="none" stroke="#f7e9df" stroke-width="4"/><text x="160" y="350" text-anchor="middle" fill="#915b5c" font-size="14" letter-spacing="5">JUST FOR YOU</text></svg>`,
+ocean:`<svg viewBox="0 0 320 410" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="410" fill="#dce9e9"/><rect x="14" y="14" width="292" height="382" fill="none" stroke="#789a9c"/><circle cx="225" cy="105" r="43" fill="#e9c98f"/><path d="M0 230q80-60 160 0t160 0v180H0z" fill="#7ba5a7"/><path d="M0 285q80-55 160 0t160 0v125H0z" fill="#527f88"/><path d="M45 175q20-20 40 0m20-25q20-20 40 0" fill="none" stroke="#648d8f" stroke-width="4"/><text x="160" y="365" text-anchor="middle" fill="#456e75" font-size="13" letter-spacing="4">A MESSAGE FROM THE SEA</text></svg>`,
+minimal:`<svg viewBox="0 0 320 410" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="410" fill="#f7f5ef"/><rect x="14" y="14" width="292" height="382" fill="none" stroke="#c8c2b5"/><circle cx="160" cy="165" r="56" fill="none" stroke="#9d9a8d" stroke-width="2"/><path d="M160 109v112m-56-56h112" stroke="#9d9a8d" stroke-width="1"/><text x="160" y="290" text-anchor="middle" fill="#565b52" font-family="Georgia" font-size="24">A little note</text><text x="160" y="365" text-anchor="middle" fill="#9a9589" font-size="10" letter-spacing="5">WITH CARE</text></svg>`,
+forest:`<svg viewBox="0 0 320 410" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="410" fill="#dfe7d9"/><rect x="14" y="14" width="292" height="382" fill="none" stroke="#87977b"/><circle cx="160" cy="165" r="105" fill="#c1d1bc"/><path d="M20 290l55-100 50 100zm85 0l68-150 70 150zm105 0l40-85 50 85z" fill="#456b54"/><path d="M105 205l28-65 29 65-29-16zM164 186l9-46 20 45-15-8z" fill="#f1f0e5"/><path d="M0 292q65-40 130 0t190-5v123H0z" fill="#9caf91"/><g fill="#b34a3c"><circle cx="78" cy="257" r="7"/><circle cx="248" cy="270" r="7"/><circle cx="200" cy="310" r="6"/></g><g stroke="#557a5d" stroke-width="3" fill="none"><path d="M35 95q35 35 0 75m0-48l-18-15m18 35l19-15M275 75q-30 30 0 65m0-43l15-13"/></g><text x="160" y="365" text-anchor="middle" font-size="12" letter-spacing="4" fill="#526c53">FROM THE FOREST</text></svg>`
+};
+let current=0,stickers=[],musicOn=false,ctx=null,musicTimer=null,selectedSticker=null,coverMode=false;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+function toast(t){let e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1900)}
+function setTab(t){$$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));['design','message','stickers'].forEach(x=>$('#'+x+'Panel').hidden=x!==t)}
+$$('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+function renderArt(){let id=designs[current].id;$('#art').innerHTML=arts[id];$('#coverArt').innerHTML=arts[id];$('#leftCaption').textContent=designs[current].name.toUpperCase();$('#cardIndex').textContent=String(current+1).padStart(2,'0');$('#thumbs').innerHTML=designs.map((d,i)=>`<button class="thumb ${i===current?'active':''}" data-i="${i}">${arts[d.id]}</button>`).join('');$('#dots').innerHTML=designs.map((d,i)=>`<i class="${i===current?'on':''}"></i>`).join('');$$('.thumb').forEach(b=>b.onclick=()=>selectDesign(+b.dataset.i));$('#designGrid').innerHTML=designs.map((d,i)=>`<button class="design ${i===current?'active':''}" data-i="${i}"><span class="design-art">${arts[d.id]}</span><b>${d.cn}</b><small>${d.tag}</small></button>`).join('');$$('.design').forEach(b=>b.onclick=()=>selectDesign(+b.dataset.i))}
+function selectDesign(i){current=(i+designs.length)%designs.length;renderArt();coverMode=false;$('#coverStandby').classList.remove('show');$('#book').style.display='flex'}
+function renderText(){let to=$('#toInput').value||'Dear friend,';$('#previewTo').textContent=to;$('#previewMessage').textContent=$('#msgInput').value;$('#previewFrom').textContent='— '+($('#fromInput').value||'With love');$('#previewDate').textContent=$('#dateInput').value;$('#insideTop').textContent='A NOTE FROM THE HEART'}
+['toInput','msgInput','fromInput','dateInput'].forEach(id=>$('#'+id).addEventListener('input',renderText));
+function renderStickers(){let layer=$('#stickerLayer');layer.innerHTML='';stickers.forEach((s,i)=>{let el=document.createElement('span');el.className='sticker';el.textContent=s.char;el.style.left=s.x+'%';el.style.top=s.y+'%';el.dataset.i=i;if(selectedSticker===i)el.classList.add('selected');el.addEventListener('pointerdown',startDrag);el.addEventListener('dblclick',()=>{stickers.splice(i,1);selectedSticker=null;renderStickers()});layer.append(el)})}
+let drag=null;
+function startDrag(e){e.preventDefault();let el=e.currentTarget;selectedSticker=+el.dataset.i;let rect=$('#leftPage').getBoundingClientRect();drag={i:selectedSticker,rect};el.setPointerCapture(e.pointerId);el.onpointermove=ev=>{if(!drag)return;let s=stickers[drag.i];s.x=Math.max(0,Math.min(90,(ev.clientX-rect.left)/rect.width*100));s.y=Math.max(0,Math.min(88,(ev.clientY-rect.top)/rect.height*100));el.style.left=s.x+'%';el.style.top=s.y+'%'};el.onpointerup=()=>{drag=null;el.onpointermove=null;el.onpointerup=null;persistDraft()}}
+$('#stickerGrid').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(stickers.length>=12){toast('贴纸数量已达上限');return}stickers.push({char:b.textContent,x:18+(stickers.length*19)%66,y:20+(stickers.length*27)%65});selectedSticker=stickers.length-1;renderStickers();toast('贴纸已添加，可以拖动调整位置')});
+$('#paper').onchange=e=>{let p=e.target.value,style=p==='warm'?'sepia(.12) saturate(.9)':p==='snow'?'brightness(1.04) saturate(.75)':'none';$$('.leaf').forEach(x=>x.style.filter=style)};
+function showCover(){coverMode=true;$('#coverStandby').classList.add('show');$('#book').style.display='none'}
+$('#backCover').onclick=showCover;$('#openBook').onclick=()=>{coverMode=false;$('#coverStandby').classList.remove('show');$('#book').style.display='flex';toast('贺卡已打开')};
+$('#prevDesign').onclick=()=>selectDesign(current-1);$('#nextDesign').onclick=()=>selectDesign(current+1);
+$('#resetStickers').onclick=()=>{stickers=[];selectedSticker=null;renderStickers();toast('贴纸已清空')};
+function finish(){renderText();$('#finishCard').classList.remove('font-serif','font-elegant','font-modern','font-hand');$('#finishCard').classList.add(fontStyle);$('#finishCard').style.setProperty('--card-ink',fontColor);$('#finishCardArt').innerHTML=arts[designs[current].id];$('#finishTo').textContent=$('#toInput').value||'Dear friend,';$('#finishMsg').textContent=$('#msgInput').value;$('#finishFrom').textContent='— '+($('#fromInput').value||'With love');$('#finishDate').textContent=$('#dateInput').value;$('#finishView').classList.add('show');$('#envelope').classList.remove('open');$('#finishCard').classList.remove('show')}
+$('#finish').onclick=finish;$('#finishTop').onclick=finish;$('#closeFinish').onclick=()=>$('#finishView').classList.remove('show');$('#seal').onclick=()=>{$('#envelope').classList.add('open');$('#finishCard').classList.add('show')};$('#reopen').onclick=()=>{$('#finishView').classList.remove('show');$('#finishCard').classList.remove('show');showCover()};
+$('#reset').onclick=()=>{current=0;stickers=[];$('#toInput').value='Dear friend,';$('#msgInput').value='May your days be warm, your heart be light, and your holidays be filled with little wonders.';$('#fromInput').value='With love';$('#dateInput').value='DECEMBER · 2026';$('#paper').value='classic';bgColor='#f7f4eb';fontStyle='font-serif';fontColor='#37493b';customBgData='';customBgImage=null;$('#bgColor').value=bgColor;$('#fontStyle').value=fontStyle;$('#fontColor').value=fontColor;renderArt();renderText();renderStickers();applyCustomization();showCover();setTab('design');toast('已恢复初始设计')};
+$('#sound').onclick=()=>{$('#sound').classList.toggle('on');toast($('#sound').classList.contains('on')?'翻页音效已开启':'翻页音效已关闭')};
+function toggleMusic(){if(!musicOn){try{let C=window.AudioContext||window.webkitAudioContext;ctx=new C();let notes=[392,440,523.25,440,349.23,392,493.88,392],i=0;musicOn=true;function note(){if(!musicOn)return;let o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=notes[i++%notes.length];g.gain.setValueAtTime(.0001,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.035,ctx.currentTime+.08);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+1.1);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+1.15);musicTimer=setTimeout(note,850)}note()}catch(e){toast('浏览器暂不支持音乐')}}else{musicOn=false;clearTimeout(musicTimer);if(ctx)ctx.close();ctx=null}$('#music').classList.toggle('on',musicOn)}
+$('#music').onclick=toggleMusic;
+function shareData(){return {design:current,to:$('#toInput').value,msg:$('#msgInput').value,from:$('#fromInput').value,date:$('#dateInput').value,stickers,paper:$('#paper').value,bgColor,fontStyle,fontColor}}
+const DRAFT_KEY='greeting_workshop_draft_v1';
+let bgColor='#f7f4eb',fontStyle='font-serif',fontColor='#37493b',customBgData='',customBgImage=null;
+const FAV_KEY='greeting_workshop_favorites_v1';
+const HISTORY_KEY='greeting_workshop_history_v1';
+let historyTimer=null;
+
+const cardTemplates=[
+{cat:'生日',name:'生日烛光',desc:'温暖明亮，给特别的一天',design:5,bg:'#f4e8cf',font:'font-serif',ink:'#76513b',to:'亲爱的你，',msg:'愿新的一岁，眼里有光，心中有爱。愿每一个平凡的日子，都藏着值得期待的小惊喜。生日快乐！',from:'真诚祝福',stickers:[{char:'🎂',x:18,y:20},{char:'🎈',x:78,y:18},{char:'✨',x:75,y:72}]},
+{cat:'生日',name:'甜蜜派对',desc:'俏皮可爱，适合好友',design:5,bg:'#f6e4df',font:'font-modern',ink:'#9a5360',to:'亲爱的朋友，',msg:'今天最大，快乐加倍！愿你吃好喝好、自在闪耀，所有期待都如约而至。生日快乐！',from:'你的朋友',stickers:[{char:'🎉',x:15,y:20},{char:'🎁',x:78,y:72}]},
+{cat:'告白',name:'心动来信',desc:'把喜欢认真写进信里',design:6,bg:'#f2dedb',font:'font-elegant',ink:'#915b5c',to:'给最特别的你，',msg:'有些心意想了很久，还是决定认真告诉你。遇见你之后，普通的日子也变得闪闪发光。',from:'一直珍惜你的人',stickers:[{char:'❤️',x:78,y:20},{char:'🌹',x:18,y:76}]},
+{cat:'告白',name:'温柔偏爱',desc:'克制浪漫，留白表达',design:8,bg:'#f7e9e7',font:'font-serif',ink:'#805b5b',to:'你好呀，',msg:'世界很大，而我总会在人群中先看向你。愿往后的故事里，有更多与你有关的温柔片段。',from:'想把温柔给你的人',stickers:[{char:'🌙',x:80,y:18},{char:'♡',x:18,y:72}]},
+{cat:'纪念日',name:'时光纪念',desc:'收藏共同走过的日子',design:8,bg:'#eee5d9',font:'font-elegant',ink:'#685447',to:'致我们，',msg:'谢谢你陪我走过这些闪闪发光的日子。愿未来的每一页，依然有并肩、有欢笑，也有平凡生活里的小确幸。',from:'与你一起',stickers:[{char:'🕊️',x:78,y:18},{char:'✨',x:20,y:70}]},
+{cat:'毕业',name:'前程似锦',desc:'送给即将出发的朋友',design:9,bg:'#e4eeee',font:'font-serif',ink:'#456e75',to:'亲爱的毕业生，',msg:'恭喜你完成一段旅程。愿你带着热爱奔赴山海，在更广阔的天地里，自由生长，前程似锦。',from:'祝你一路精彩',stickers:[{char:'🎓',x:18,y:20},{char:'⭐',x:78,y:72}]},
+{cat:'节日',name:'圣诞祝福',desc:'冬日暖意与节日惊喜',design:0,bg:'#e4eadf',font:'font-hand',ink:'#37493b',to:'亲爱的朋友，',msg:'愿这个冬天，有热可可、有温暖灯光，也有惦念你的人。圣诞快乐，愿美好如约而至。',from:'Merry Christmas',stickers:[{char:'🎄',x:18,y:18},{char:'❄️',x:80,y:72}]},
+{cat:'节日',name:'新年心愿',desc:'把新的期待写进卡片',design:3,bg:'#f0e3d1',font:'font-serif',ink:'#76533c',to:'新年快乐，',msg:'愿新的一年，三餐四季皆有趣，所行皆坦途，所愿皆成真。把旧日烦恼留在身后，向新的美好出发。',from:'新年顺遂',stickers:[{char:'🎆',x:78,y:18},{char:'🧧',x:18,y:74}]},
+{cat:'感谢',name:'谢谢有你',desc:'把感谢说得温柔而真诚',design:5,bg:'#e4eadf',font:'font-hand',ink:'#526c53',to:'亲爱的你，',msg:'谢谢你在我需要的时候伸出手，也谢谢你把平凡的日子变得温暖。你的善意，我一直记得。',from:'心怀感激',stickers:[{char:'🌼',x:18,y:20},{char:'💚',x:78,y:72}]},
+{cat:'日常',name:'给你一封信',desc:'没有特别理由，只想问候',design:7,bg:'#f7f4eb',font:'font-serif',ink:'#37493b',to:'嗨，最近好吗？',msg:'路过一段好看的风景，忽然想起你。愿你最近忙而不乱，心中有盼，日子有光。',from:'一个惦记你的人',stickers:[{char:'✉️',x:18,y:75},{char:'☀️',x:78,y:18}]},
+{cat:'日常',name:'海风问候',desc:'清爽蓝调，送去轻松心情',design:7,bg:'#dce9e9',font:'font-modern',ink:'#456e75',to:'你好，',msg:'愿你有海风般自在的心情，也有向着远方出发的勇气。今天也要好好吃饭，好好生活。',from:'祝一切顺利',stickers:[{char:'🌊',x:18,y:20},{char:'🐚',x:78,y:72}]},
+{cat:'感谢',name:'温柔致谢',desc:'适合老师、同事与重要的人',design:6,bg:'#f0e3d1',font:'font-elegant',ink:'#695747',to:'谨以此卡，致谢于你：',msg:'感谢你的耐心、帮助与鼓励。那些看似微小的善意，给了我继续向前的力量。谨祝安好，万事顺意。',from:'衷心感谢',stickers:[{char:'🌿',x:18,y:18},{char:'🤍',x:78,y:72}]}
+];
+let activeTemplateCategory='全部';
+function renderTemplates(){const cats=['全部',...new Set(cardTemplates.map(t=>t.cat))];$('#templateFilters').innerHTML=cats.map(c=>`<button class="template-filter ${c===activeTemplateCategory?'active':''}" data-cat="${c}">${c}</button>`).join('');$$('.template-filter').forEach(b=>b.onclick=()=>{activeTemplateCategory=b.dataset.cat;renderTemplates()});const items=cardTemplates.map((t,i)=>({...t,index:i})).filter(t=>activeTemplateCategory==='全部'||t.cat===activeTemplateCategory);$('#templateGrid').innerHTML=items.map(t=>`<article class="template-card"><div class="template-preview">${arts[designs[t.design].id]}</div><div class="template-meta"><strong>${t.name}</strong><small>${t.cat} · ${t.desc}</small><button data-template="${t.index}">使用这款模板</button></div></article>`).join('');$$('[data-template]').forEach(b=>b.onclick=()=>useTemplate(+b.dataset.template))}
+function useTemplate(i){const t=cardTemplates[i];if(!t)return;applySnapshot({design:t.design,to:t.to,msg:t.msg,from:t.from,date:'',stickers:t.stickers,paper:'classic',bgColor:t.bg,fontStyle:t.font,fontColor:t.ink});customBgData='';customBgImage=null;$('#bgUpload').value='';applyCustomization();$$('.swatch').forEach(x=>x.classList.toggle('active',x.dataset.bg===t.bg));$('#templateModal').classList.remove('show');setTab('message');toast('已套用「'+t.name+'」，可以继续编辑');}
+$('#openTemplates').onclick=()=>{$('#templateModal').classList.add('show');activeTemplateCategory='全部';renderTemplates()};$('#closeTemplates').onclick=()=>$('#templateModal').classList.remove('show');$('#templateModal').addEventListener('click',e=>{if(e.target.id==='templateModal')$('#templateModal').classList.remove('show')});
+
+function applyCustomization(){
+ const pages=[$('#leftPage'),document.querySelector('.leaf.right')];
+ pages.forEach(el=>{if(!el)return;el.style.backgroundColor=bgColor;el.style.backgroundImage=customBgData?`linear-gradient(#ffffff33,#ffffff33),url("${customBgData}")`:'repeating-linear-gradient(0deg,#fff0 0,#fff0 3px,#a79a7610 4px),radial-gradient(#cfc5ad20 .7px,transparent .8px)';el.style.backgroundSize=customBgData?'cover':'auto,6px 6px';el.style.backgroundPosition='center';el.style.backgroundRepeat='no-repeat'});
+ const book=$('#book');book.classList.remove('font-serif','font-elegant','font-modern','font-hand');book.classList.add(fontStyle);document.querySelectorAll('.big-message,.to-line,.from-line').forEach(el=>el.style.color=fontColor);['#finishTo','#finishMsg','#finishFrom'].forEach(sel=>{const el=$(sel);if(el)el.style.color=fontColor});
+}
+function saveSnapshot(){const d=shareData();d.bgColor=bgColor;d.fontStyle=fontStyle;d.fontColor=fontColor;d.label=($('#toInput').value||'未命名贺卡').slice(0,20);return d}
+function readList(){try{return JSON.parse(localStorage.getItem(FAV_KEY)||'[]')}catch(e){return []}}
+function writeList(a){try{localStorage.setItem(FAV_KEY,JSON.stringify(a.slice(0,30)));return true}catch(e){toast('本地空间不足，无法保存更多作品');return false}}
+function renderLibrary(){const box=$('#libraryList'),favs=readList();let history=[];try{history=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]')}catch(e){};const rows=[...favs.map((d,i)=>({d,kind:'收藏',index:i})),...history.map((d,i)=>({d,kind:'历史草稿',index:i}))];if(!rows.length){box.innerHTML='<p class="tip">这里还没有收藏或历史草稿。编辑内容后会自动记录最近的草稿。</p>';return}box.innerHTML=rows.map((r,i)=>`<div class="library-item"><div><strong>${r.d.label||'我的贺卡'} <small>· ${r.kind}</small></strong><small>${designs[r.d.design]?.cn||'自定义设计'} · ${r.d.date||'未填写日期'}</small></div><div><button data-load="${i}">载入</button>${r.kind==='收藏'?` <button data-del-fav="${r.index}">删除</button>`:` <button data-del-hist="${r.index}">删除</button>`}</div></div>`).join('');box.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{const r=rows[+b.dataset.load];applySnapshot(r.d);$('#libraryModal').classList.remove('show');toast('作品已载入')});box.querySelectorAll('[data-del-fav]').forEach(b=>b.onclick=()=>{const a=readList();a.splice(+b.dataset.delFav,1);writeList(a);renderLibrary()});box.querySelectorAll('[data-del-hist]').forEach(b=>b.onclick=()=>{history.splice(+b.dataset.delHist,1);localStorage.setItem(HISTORY_KEY,JSON.stringify(history));renderLibrary()})}
+function applySnapshot(d){current=Math.max(0,Math.min(designs.length-1,Number(d.design)||0));$('#toInput').value=d.to||'';$('#msgInput').value=d.msg||'';$('#fromInput').value=d.from||'';$('#dateInput').value=d.date||'';stickers=Array.isArray(d.stickers)?d.stickers.slice(0,12):[];$('#paper').value=d.paper||'classic';bgColor=d.bgColor||'#f7f4eb';fontStyle=d.fontStyle||'font-serif';fontColor=d.fontColor||'#37493b';$('#bgColor').value=bgColor;$('#fontStyle').value=fontStyle;$('#fontColor').value=fontColor;renderArt();renderText();renderStickers();applyCustomization();persistDraft()}
+$('#favoriteCurrent').onclick=()=>{const items=readList(),d=saveSnapshot();items.unshift(d);if(writeList(items))toast('已收藏到“我的收藏 / 草稿”')};
+$('#openLibrary').onclick=()=>{$('#libraryModal').classList.add('show');renderLibrary()};$('#closeLibrary').onclick=()=>$('#libraryModal').classList.remove('show');
+$('#bgSwatches').onclick=e=>{const b=e.target.closest('[data-bg]');if(!b)return;bgColor=b.dataset.bg;customBgData='';customBgImage=null;$('#bgColor').value=bgColor;$('#bgUpload').value='';$$('.swatch').forEach(x=>x.classList.toggle('active',x===b));applyCustomization();persistDraft()};
+$('#bgColor').oninput=e=>{bgColor=e.target.value;customBgData='';customBgImage=null;applyCustomization();persistDraft()};
+$('#fontStyle').onchange=e=>{fontStyle=e.target.value;applyCustomization();persistDraft()};$('#fontColor').oninput=e=>{fontColor=e.target.value;applyCustomization();persistDraft()};
+$('#bgUpload').onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)return;if(!f.type.startsWith('image/')){toast('请选择图片文件');return}const r=new FileReader();r.onload=()=>{customBgData=r.result;customBgImage=new Image();customBgImage.onload=()=>{applyCustomization();toast('背景图片已应用（仅当前会话）')};customBgImage.src=customBgData};r.readAsDataURL(f)};
+$('#showQR').onclick=()=>{const modal=$('#qrModal'),content=$('#qrContent');modal.classList.add('show');if(!/^https?:$/.test(location.protocol)){content.innerHTML='<p>当前打开的是本地 HTML 文件，无法生成公网二维码。</p><p class="tip">请先将「贺卡工坊」部署到 GitHub Pages、Netlify 或其他静态网站托管平台，再打开在线网址生成二维码。</p>';return}const url=location.href.split('#')[0]+'#letter='+encodedCard();content.innerHTML='<p>正在本机生成二维码…</p>';const draw=()=>{content.innerHTML='';const target=document.createElement('div');target.style.cssText='display:inline-block;background:white;padding:12px';content.append(target);new QRCode(target,{text:url,width:240,height:240,colorDark:'#263b30',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});const p=document.createElement('p');p.textContent='扫码即可打开这张专属贺卡';content.append(p);const cp=document.createElement('button');cp.className='small-action';cp.textContent='复制分享链接';cp.onclick=()=>navigator.clipboard.writeText(url).then(()=>toast('链接已复制')).catch(()=>prompt('复制链接',url));content.append(cp)};if(window.QRCode){draw()}else{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';sc.onload=draw;sc.onerror=()=>{content.innerHTML='<p>二维码组件加载失败，请检查网络后重试。</p>'};document.head.append(sc)}};$('#closeQR').onclick=()=>$('#qrModal').classList.remove('show');
+
+function persistDraft(){try{const snap=saveSnapshot();localStorage.setItem(DRAFT_KEY,JSON.stringify(snap));clearTimeout(historyTimer);historyTimer=setTimeout(()=>{try{let h=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');const key=JSON.stringify(snap);if(!h.length||JSON.stringify(h[0])!==key){h.unshift(snap);localStorage.setItem(HISTORY_KEY,JSON.stringify(h.slice(0,20)))}}catch(e){}},700);const st=$('#saveState');if(st)st.textContent='草稿已自动保存'}catch(e){const st=$('#saveState');if(st)st.textContent='当前浏览器不支持自动保存'}}
+function restoreDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(!raw)return;const d=JSON.parse(raw);current=Math.max(0,Math.min(designs.length-1,Number(d.design)||0));$('#toInput').value=d.to||'Dear friend,';$('#msgInput').value=d.msg||'';$('#fromInput').value=d.from||'With love';$('#dateInput').value=d.date||'';stickers=Array.isArray(d.stickers)?d.stickers.slice(0,12):[];$('#paper').value=d.paper||'classic';bgColor=d.bgColor||'#f7f4eb';fontStyle=d.fontStyle||'font-serif';fontColor=d.fontColor||'#37493b';$('#bgColor').value=bgColor;$('#fontStyle').value=fontStyle;$('#fontColor').value=fontColor}catch(e){}}
+document.addEventListener('input',e=>{if(['toInput','msgInput','fromInput','dateInput'].includes(e.target.id))persistDraft()});
+document.addEventListener('change',e=>{if(e.target.id==='paper')persistDraft()});
+document.addEventListener('click',e=>{if(e.target.closest('button'))persistDraft()});
+function encodedCard(){return btoa(unescape(encodeURIComponent(JSON.stringify(shareData()))))}
+function downloadBlob(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)}
+$('#share').onclick=async()=>{
+ const payload=encodedCard(),isHosted=/^https?:$/.test(location.protocol);
+ if(isHosted){
+   const url=location.href.split('#')[0]+'#letter='+payload;
+   try{await navigator.clipboard.writeText(url);toast('在线贺卡链接已复制，可以发送给朋友');}
+   catch(e){if(navigator.share){try{await navigator.share({title:'一份专属心意',url})}catch(_){}}else prompt('复制在线贺卡链接',url)}
+   return;
+ }
+ // Local content:// or file:// pages cannot produce a public URL. Export a portable, personalized HTML card instead.
+ let portable=document.documentElement.outerHTML.replace(/<body>/,'<body><div style="position:fixed;z-index:9999;top:8px;left:8px;background:#314b3b;color:white;padding:7px 10px;font:12px sans-serif">这是一份离线贺卡文件，可转发给朋友打开</div>');
+ portable=portable.replace('restoreDraft();renderArt();renderText();renderStickers();loadShare();applyCustomization();persistDraft();',`location.hash='#letter=${payload}';restoreDraft();renderArt();renderText();renderStickers();loadShare();applyCustomization();persistDraft();`);
+ const full='<!DOCTYPE html>'+portable;
+ const blob=new Blob([full],{type:'text/html;charset=utf-8'});
+ const file=new File([blob],'我的专属贺卡.html',{type:'text/html'});
+ if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+   try{await navigator.share({title:'贺卡工坊 · 送你一张贺卡',text:'打开这份 HTML 文件，看看我给你的祝福。',files:[file]});toast('已打开系统分享面板');return}catch(e){}
+ }
+ downloadBlob(blob,'我的专属贺卡.html');
+ try{await navigator.clipboard.writeText('这是本地离线贺卡文件，不是公网网址。请把下载的「我的专属贺卡.html」作为文件发送给朋友。');}catch(e){}
+ toast('已生成可转发的贺卡 HTML 文件；本地文件无法直接生成公网链接');
+};
+function loadShare(){if(location.hash.startsWith('#letter=')){try{let d=JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(8)))));current=Math.max(0,Math.min(designs.length-1,d.design||0));$('#toInput').value=d.to||'';$('#msgInput').value=d.msg||'';$('#fromInput').value=d.from||'';$('#dateInput').value=d.date||'';stickers=Array.isArray(d.stickers)?d.stickers.slice(0,12):[];$('#paper').value=d.paper||'classic';bgColor=d.bgColor||'#f7f4eb';fontStyle=d.fontStyle||'font-serif';fontColor=d.fontColor||'#37493b';$('#bgColor').value=bgColor;$('#fontStyle').value=fontStyle;$('#fontColor').value=fontColor;renderArt();renderText();renderStickers();applyCustomization();toast('已载入分享的贺卡')}catch(e){}}}
+$('#saveImage').onclick=async()=>{
+ const btn=$('#saveImage');btn.disabled=true;btn.textContent='正在生成图片…';
+ try{
+  const W=2800,H=1800,c=document.createElement('canvas');c.width=W;c.height=H;
+  const x=c.getContext('2d');if(!x)throw new Error('canvas unavailable');x.scale(2,2);
+  x.fillStyle='#eeeae0';x.fillRect(0,0,W,H);
+  x.fillStyle=bgColor||'#f7f4eb';x.fillRect(55,55,635,790);x.fillRect(690,55,655,790);
+  if(customBgImage&&customBgImage.complete){try{x.drawImage(customBgImage,55,55,635,790)}catch(e){}}
+  // Load the SVG through a Blob URL (more reliable than a data: SVG URL in mobile browsers).
+  const svg=arts[designs[current].id];let artDrawn=false,svgUrl='';
+  try{
+   const svgBlob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});svgUrl=URL.createObjectURL(svgBlob);
+   const img=new Image();
+   await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(new Error('svg load failed'));img.src=svgUrl});
+   x.drawImage(img,55,55,635,790);artDrawn=true;
+  }catch(e){
+   // Canvas-native fallback illustration: never block saving because a decorative SVG failed.
+   const id=designs[current].id;
+   const bg={window:'#963c34',wreath:'#e8e9dc',snow:'#dce6e3',moon:'#eee6d4',forest:'#dfe7d9'}[id]||'#e8e9dc';
+   x.fillStyle=bg;x.fillRect(55,55,635,790);x.strokeStyle='#b89a62';x.lineWidth=5;x.strokeRect(78,78,589,744);
+   x.textAlign='center';
+   if(id==='window'){
+    x.fillStyle='#263b35';x.fillRect(155,175,435,440);x.strokeStyle='#e4cc96';x.lineWidth=16;x.strokeRect(155,175,435,440);
+    x.fillStyle='#315744';x.beginPath();x.moveTo(372,205);x.lineTo(205,555);x.lineTo(540,555);x.closePath();x.fill();
+    x.fillStyle='#e8d29b';[[290,350],[450,390],[360,475],[505,520]].forEach(([a,b])=>{x.beginPath();x.arc(a,b,11,0,Math.PI*2);x.fill()});
+   }else if(id==='wreath'){
+    x.strokeStyle='#527158';x.lineWidth=34;x.beginPath();x.arc(372,405,210,0,Math.PI*2);x.stroke();x.fillStyle='#b64238';[[372,195],[582,405],[372,615],[162,405]].forEach(([a,b])=>{x.beginPath();x.arc(a,b,19,0,Math.PI*2);x.fill()});
+    x.fillStyle='#53684e';x.font='italic 62px Georgia';x.fillText('Warm Wishes',372,420);
+   }else if(id==='snow'){
+    x.fillStyle='#829c99';x.beginPath();x.moveTo(90,570);x.lineTo(250,330);x.lineTo(360,500);x.lineTo(470,290);x.lineTo(655,570);x.closePath();x.fill();
+    x.fillStyle='#f4f3eb';x.fillRect(80,570,585,150);x.fillStyle='#456a69';[[190,580],[530,580]].forEach(([a,b])=>{x.beginPath();x.moveTo(a-55,b);x.lineTo(a,b-125);x.lineTo(a+55,b);x.fill()});
+   }else if(id==='moon'){
+    x.fillStyle='#c4a568';x.beginPath();x.arc(385,370,185,0,Math.PI*2);x.fill();x.fillStyle=bg;x.beginPath();x.arc(470,300,170,0,Math.PI*2);x.fill();
+    x.fillStyle='#a58a56';[[180,240],[550,500],[250,550],[570,200]].forEach(([a,b])=>{x.beginPath();x.arc(a,b,10,0,Math.PI*2);x.fill()});
+   }else{
+    x.fillStyle='#456b54';[[210,560,115],[375,500,180],[550,560,120]].forEach(([a,b,h])=>{x.beginPath();x.moveTo(a,b-h);x.lineTo(a-h*.55,b);x.lineTo(a+h*.55,b);x.closePath();x.fill()});
+    x.fillStyle='#b34a3c';[[160,600],[570,630],[450,680]].forEach(([a,b])=>{x.beginPath();x.arc(a,b,13,0,Math.PI*2);x.fill()});
+   }
+   x.fillStyle=id==='window'?'#f3dfb5':'#526c53';x.font='24px Georgia';x.fillText(designs[current].name.toUpperCase(),372,770);
+  }finally{if(svgUrl)URL.revokeObjectURL(svgUrl)}
+  // Text panel
+  x.textAlign='center';x.fillStyle='#9b8a6b';x.font='22px Georgia';x.fillText('A NOTE FOR YOU',1017,220);
+  x.fillStyle=fontColor||'#52624f';x.font=(fontStyle==='font-modern'?'42px Arial':fontStyle==='font-hand'?'42px KaiTi': 'italic 42px Georgia');x.fillText($('#toInput').value||'Dear friend,',1017,295);
+  const text=$('#msgInput').value||'';x.font=(fontStyle==='font-modern'?'30px Arial':fontStyle==='font-hand'?'30px KaiTi':'italic 30px Georgia');
+  const max=485,lines=[];let line='';
+  for(const ch of text){if(x.measureText(line+ch).width>max&&line){lines.push(line);line=ch}else line+=ch}if(line)lines.push(line);
+  const lineHeight=43,available=260,maxLines=Math.max(1,Math.floor(available/lineHeight));
+  lines.slice(0,maxLines).forEach((l,i)=>x.fillText(l,1017,370+i*lineHeight));
+  x.fillStyle='#927b58';x.font='italic 26px Georgia';x.fillText('— '+($('#fromInput').value||'With love'),1017,690);
+  x.fillStyle='#a19784';x.font='18px Georgia';x.fillText($('#dateInput').value||'',1017,740);
+  stickers.forEach(st=>{x.font='46px serif';x.fillText(st.char,55+st.x/100*635,55+st.y/100*790)});
+  x.strokeStyle='#ded7c8';x.lineWidth=2;x.strokeRect(55,55,635,790);x.strokeRect(690,55,655,790);
+  const png=await new Promise((resolve,reject)=>{if(!c.toBlob){reject(new Error('toBlob unsupported'));return}c.toBlob(b=>b?resolve(b):reject(new Error('empty PNG')),'image/png')});
+  const file=new File([png],'我的贺卡.png',{type:'image/png'});
+  if(navigator.share&&navigator.canShare){try{if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'贺卡工坊 · 我的贺卡'});toast('已打开分享面板，可选择保存或发送');return}}catch(e){if(e&&e.name==='AbortError'){toast('已取消分享');return}}}
+  // Use a direct download link first; if the browser ignores it, open the PNG for long-press saving.
+  const url=URL.createObjectURL(png),a=document.createElement('a');a.href=url;a.download='我的贺卡.png';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
+  // In embedded Android browsers, download attributes may be ignored. Show the PNG in-page so it can be long-pressed and saved.
+  const layer=document.createElement('div');layer.style.cssText='position:fixed;inset:0;z-index:99999;background:#171914ee;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;color:white;font:14px sans-serif;text-align:center';
+  const tip=document.createElement('div');tip.textContent='贺卡图片已生成｜长按下方图片，选择“保存图片”';tip.style.cssText='margin:0 0 14px;line-height:1.7';
+  const preview=document.createElement('img');preview.src=url;preview.alt='生成的贺卡';preview.style.cssText='display:block;max-width:100%;max-height:76vh;object-fit:contain;background:#eee';
+  const close=document.createElement('button');close.textContent='返回贺卡';close.style.cssText='margin-top:14px;padding:11px 28px;border:0;background:#344d3d;color:white';
+  close.onclick=()=>{layer.remove();URL.revokeObjectURL(url)};layer.append(tip,preview,close);document.body.appendChild(layer);
+  toast('图片已生成，请长按图片保存到手机');
+ }catch(e){console.error(e);toast('图片生成失败，请用 Chrome 打开后重试')}
+ finally{btn.disabled=false;btn.textContent='保存贺卡图片'}
+};
+restoreDraft();renderArt();renderText();renderStickers();loadShare();applyCustomization();persistDraft();
+</script></body></html>
